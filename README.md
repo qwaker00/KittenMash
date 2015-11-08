@@ -1,5 +1,10 @@
 # Kitten Mash
 
+## Overview
+Web-service to choose best images of a kitten in a world using side-by-side comparations.
+Two images of kittens given to user at time, and he should choose which one is better. System builds Elo rating based on all users' votes.
+User free to add new images of a kittens to service.
+
 ## API
 
 ### List items' rating top
