@@ -5,6 +5,7 @@
 #include <fastcgi2/stream.h>
 
 #include <iostream>
+#include "../orm/image.h"
 
 class ImageHandler: virtual public fastcgi::Component, virtual public fastcgi::Handler {
 public:
@@ -21,8 +22,14 @@ public:
 
     virtual void handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
         if (req->getRequestMethod() == "GET") {
+            const auto& filename = req->getScriptFilename();
+            if (filename.length() <= 7) {
+                return req->sendError(400); // No id provided
+            }
             const auto& imageId = req->getScriptFilename().substr(7);
             std::cerr << imageId << std::endl;
+            Db db;
+            std::cerr << DbImage(&db, imageId.c_str()).getSize() << std::endl;
         } else
         if (req->getRequestMethod() == "POST") {
             std::vector<std::string> fileNames;
