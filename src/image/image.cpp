@@ -1,3 +1,5 @@
+#include <orm/image.h>
+
 #include <fastcgi2/component.h>
 #include <fastcgi2/component_factory.h>
 #include <fastcgi2/handler.h>
@@ -5,7 +7,6 @@
 #include <fastcgi2/stream.h>
 
 #include <iostream>
-#include "../orm/image.h"
 
 class ImageHandler: virtual public fastcgi::Component, virtual public fastcgi::Handler {
 public:
@@ -27,9 +28,11 @@ public:
                 return req->sendError(400); // No id provided
             }
             const auto& imageId = req->getScriptFilename().substr(7);
-            std::cerr << imageId << std::endl;
             Db db;
-            std::cerr << DbImage(&db, imageId.c_str()).getSize() << std::endl;
+            DbImage image(&db, imageId.c_str());
+            auto buf = image.getData();
+            auto len = image.getSize();
+            req->write(buf, len);
         } else
         if (req->getRequestMethod() == "POST") {
             std::vector<std::string> fileNames;

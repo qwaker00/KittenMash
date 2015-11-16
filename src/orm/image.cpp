@@ -19,6 +19,11 @@ size_t DbImage::getSize() const {
     return len;
 }
 
+const char* DbImage::getData() const {
+    int len;
+    return impl->data["data"].binData(len);
+}
+
 DbImage::DbImage(Db* db, const char* id) {
     try {
         const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );

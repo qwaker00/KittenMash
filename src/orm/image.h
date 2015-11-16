@@ -9,6 +9,7 @@ public:
     ~DbImage();
 
     size_t getSize() const;
+    const char* getData() const;
 
 private:
     class Impl;
