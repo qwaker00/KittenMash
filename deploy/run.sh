@@ -1,1 +1,1 @@
-sudo fastcgi-daemon2 --config=kittenmash.conf
+sudo fastcgi-daemon2 --config=daemon.conf
