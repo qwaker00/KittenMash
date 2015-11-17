@@ -10,8 +10,8 @@ public:
         : db(db)
     {}
 
-    bool GetById(const char* id);
-    void PutWithData(const std::string& data);
+    bool getById(const char* id);
+    void putWithData(const std::string& data);
 
     size_t getSize() const;
     const char* getData(size_t& len) const;

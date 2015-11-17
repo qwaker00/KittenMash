@@ -17,7 +17,7 @@ const std::string& DbImage::getId() const {
     return id;
 }
 
-void DbImage::PutWithData(const std::string& data) {
+void DbImage::putWithData(const std::string& data) {
     const mongo::BSONObj& b = mongo::BSONObjBuilder().genOID()\
         .appendBinData("data", data.length(), mongo::BinDataType::BinDataGeneral, data.c_str())\
         .append("gameCount", (long long)0) \
@@ -28,7 +28,7 @@ void DbImage::PutWithData(const std::string& data) {
     this->id = b["_id"].OID().toString();
 }
 
-bool DbImage::GetById(const char* id) {
+bool DbImage::getById(const char* id) {
     const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
     const auto& fields = BSON("_id" << 1 << "data" << 1);
     const auto& b = db->getConnection()->findOne("test.images", q, &fields);

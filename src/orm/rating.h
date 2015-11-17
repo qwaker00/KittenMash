@@ -22,7 +22,7 @@ public:
         return id;
     }
 
-    bool InitById(const char* id);
+    bool getById(const char* id);
     static std::vector<DbRating> getTop(Db& db, size_t n);
 
 private:

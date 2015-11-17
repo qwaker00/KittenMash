@@ -1,7 +1,7 @@
 #include "rating.h"
 #include "db_impl.h"
 
-bool DbRating::InitById(const char* id) {
+bool DbRating::getById(const char* id) {
     const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
     const auto& fields = BSON("_id" << 1 << "rating" << 1 << "gameCount" << 1);
     const auto& b = db->getConnection()->findOne("test.images", q, &fields);
