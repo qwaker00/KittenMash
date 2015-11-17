@@ -13,24 +13,24 @@ void ImageHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*
         const auto& imageId = req->getScriptFilename().substr(7);
         Db db;
         DbImage image(db);
-        if (!image.InitById(imageId.c_str())) {
+        if (!image.GetById(imageId.c_str())) {
             return req->sendError(404); // Not found
         }
-        int len = 0;
-        auto buf = image.getData(len);
+        size_t len = 0;
+        const char* buf = image.getData(len);
         req->write(buf, len);
         return;
     } else
     if (req->getRequestMethod() == "POST") {
         if (req->hasFile("image")) {
-            Db db;
-            DbImage image(db);
-            if (req->remoteFile("image").size() > 1 * 1024 * 1024) {
+           if (req->remoteFile("image").size() > 1 * 1024 * 1024) {
                 return req->sendError(413); // Too large
             }
             std::string data;
             req->remoteFile("image").toString(data);
-            image.InitByData(data);
+            Db db;
+            DbImage image(db);
+            image.PutWithData(data);
             req->setHeader("Location", std::string("/image/") + image.getId());
             return req->setStatus(302); // Redirect
         } else {

@@ -6,20 +6,20 @@
 
 class DbImage {
 public:
-    DbImage(Db& db);
-    ~DbImage();
+    DbImage(Db& db)
+        : db(db)
+    {}
 
-    bool InitById(const char* id);
-    bool InitByData(const std::string& data);
+    bool GetById(const char* id);
+    void PutWithData(const std::string& data);
 
     size_t getSize() const;
-    const char* getData() const;
-    const char* getData(int& len) const;
-    std::string getId() const;
+    const char* getData(size_t& len) const;
+    const std::string& getId() const;
 
 private:
-    class Impl;
-    Impl* impl;
+    std::string data;
+    std::string id;
 
     const Db& db;
 };
