@@ -1,0 +1,54 @@
+<!DOCTYPE>
+<html>
+<head>
+	<title>KittenMash - side-by-side comparation of kittens' images</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/ico" ref="/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="/style.css">
+	<link href="https://yastatic.net/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>	
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">KittenMash</a>
+			</div>
+			<div>
+				<ul class="nav navbar-nav">
+					<li><a href="/">Home</a></li>
+					<li class="active"><a href="/top.htm">Top</a></li>
+					<li><a href="/upload.htm">Upload</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container">
+		<h1 class="text-center">Top 100 kittens</h1>
+		<br><br>
+		<table class="table" id="toptable">
+			<thead>
+				<tr>
+					<th>#</th>
+					<th>Image</th>
+					<th>Rating</th>
+					<th>Games</th>
+				</tr>
+			</thead>
+		</table>
+    </div>
+	<script src="https://yastatic.net/jquery/2.1.4/jquery.min.js"></script>
+	<script>
+		$.get('/top', function(response) {
+			var table = $('#toptable');
+			for (var i = 0; i < response.length; ++i) {
+				var item = response[i];
+               	$('<tr><th>' + (i + 1) + '</th>' +
+				'<td class="col-xs-3"><img src="' + item.image + '" class="img-responsive img-clickable"></td>' +
+				'<td>' + item.rating + '</td>' +
+				'<td>' + item.gameCount + '</td></tr>').appendTo(table);
+			}
+		});
+	</script>
+</body>
+</html>
