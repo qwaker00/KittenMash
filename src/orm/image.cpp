@@ -38,7 +38,11 @@ DbImage::DbImage(Db& db)
 {}
 
 bool DbImage::InitByData(const std::string& data) {
-    const mongo::BSONObj& b = mongo::BSONObjBuilder().genOID().appendBinData("data", data.length(), mongo::BinDataType::BinDataGeneral, data.c_str()).obj();
+    const mongo::BSONObj& b = mongo::BSONObjBuilder().genOID()\
+        .appendBinData("data", data.length(), mongo::BinDataType::BinDataGeneral, data.c_str())\
+        .append("gameCount", (long long)0) \
+        .append("rating", (double)1200) \
+        .obj();
     db->getConnection()->insert("test.images", b);
     delete impl;
     impl = new Impl(b.getOwned());
@@ -47,7 +51,8 @@ bool DbImage::InitByData(const std::string& data) {
 
 bool DbImage::InitById(const char* id) {
     const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
-    const mongo::BSONObj& b = db->getConnection()->findOne("test.images", q);
+    const auto& fields = BSON("_id" << 1 << "data" << 1);
+    const auto& b = db->getConnection()->findOne("test.images", q, &fields);
     if (b.isEmpty()) {
         return false;
     }

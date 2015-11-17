@@ -17,8 +17,9 @@ Response
 ```
 [
   {
-  	"image" : <url of image>
-  	"rating" : <float>
+  	"image" : <url of image>,
+  	"rating" : <float>,
+  	"gameCount" : <int>
   },
   ...    
 ]
@@ -95,7 +96,7 @@ Request
 
 Response
   * **Code**: 
-      * Success - 201
+      * Success - 302
       * There is no kitten on image - 400
   * **Location**: /image/\<item_id\>
 

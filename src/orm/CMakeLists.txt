@@ -1,3 +1,3 @@
-set(SOURCE_LIB db.cpp db_impl.cpp image.cpp)
+set(SOURCE_LIB db.cpp db_impl.cpp image.cpp rating.cpp)
 
-add_library(orm OBJECT ${SOURCE_LIB})
+add_library(orm STATIC ${SOURCE_LIB})

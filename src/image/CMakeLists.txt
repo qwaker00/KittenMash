@@ -1,3 +1,3 @@
 set(SOURCE_LIB image.cpp)
 
-add_library(image OBJECT ${SOURCE_LIB})
+add_library(image STATIC ${SOURCE_LIB})
