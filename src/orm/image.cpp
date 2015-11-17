@@ -6,7 +6,7 @@
 
 class DbImage::Impl {
 public:
-    Impl(mongo::BSONObj b)
+    Impl(const mongo::BSONObj& b)
         : data(b)
     {}
 
@@ -21,21 +21,39 @@ size_t DbImage::getSize() const {
 
 const char* DbImage::getData() const {
     int len;
+    return getData(len);
+}
+
+const char* DbImage::getData(int& len) const {
     return impl->data["data"].binData(len);
 }
 
-DbImage::DbImage(Db* db, const char* id) {
-    try {
-        const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
-        const mongo::BSONObj& b = (*db)->getConnection()->findOne("test.images", q);
-        if (b.isEmpty()) {
-            throw std::exception();
-        } else {
-            impl = new Impl(b);
-        }
-    } catch(std::exception& e) {
-        std::cerr << e.what() << std::endl;
+std::string DbImage::getId() const {
+    return impl->data["_id"].OID().toString();
+}
+
+DbImage::DbImage(Db& db)
+    : impl(nullptr)
+    , db(db)
+{}
+
+bool DbImage::InitByData(const std::string& data) {
+    const mongo::BSONObj& b = mongo::BSONObjBuilder().genOID().appendBinData("data", data.length(), mongo::BinDataType::BinDataGeneral, data.c_str()).obj();
+    db->getConnection()->insert("test.images", b);
+    delete impl;
+    impl = new Impl(b.getOwned());
+    return true;
+}
+
+bool DbImage::InitById(const char* id) {
+    const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
+    const mongo::BSONObj& b = db->getConnection()->findOne("test.images", q);
+    if (b.isEmpty()) {
+        return false;
     }
+    delete impl;
+    impl = new Impl(b.getOwned());
+    return true;
 }
 
 DbImage::~DbImage() {

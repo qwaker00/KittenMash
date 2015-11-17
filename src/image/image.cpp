@@ -29,20 +29,32 @@ public:
             }
             const auto& imageId = req->getScriptFilename().substr(7);
             Db db;
-            DbImage image(&db, imageId.c_str());
-            auto buf = image.getData();
-            auto len = image.getSize();
+            DbImage image(db);
+            if (!image.InitById(imageId.c_str())) {
+                return req->sendError(404); // Not found
+            }
+            int len = 0;
+            auto buf = image.getData(len);
             req->write(buf, len);
+            return;
         } else
         if (req->getRequestMethod() == "POST") {
-            std::vector<std::string> fileNames;
-            req->remoteFiles(fileNames);
-            std::cerr << fileNames.size() << ":\n";
-            for (const auto& f : fileNames) {
-                std::cerr << f << std::endl;
+            if (req->hasFile("image")) {
+                Db db;
+                DbImage image(db);
+                if (req->remoteFile("image").size() > 1 * 1024 * 1024) {
+                    return req->sendError(413); // Too large
+                }
+                std::string data;
+                req->remoteFile("image").toString(data);
+                image.InitByData(data);
+                req->setHeader("Location", std::string("/image/") + image.getId());
+                return req->setStatus(302); // Redirect
+            } else {
+                return req->sendError(400); // Filename should be image
             }
         } else {
-            req->sendError(405);
+            return req->sendError(405); // Invalid method
         }
     }
 
