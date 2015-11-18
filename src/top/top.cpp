@@ -8,7 +8,7 @@ void TopHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) 
     if (req->getRequestMethod() == "GET") {
         Db db;
         const auto& ratings = DbRating::getTop(db, 100);
-        std::stringstream output;
+        std::ostringstream output;
         output << '[';
         bool first = true;
         for (const auto& rating : ratings) {

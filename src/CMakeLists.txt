@@ -11,6 +11,9 @@ set(SOURCES factories.cpp)
 add_subdirectory(orm)
 add_subdirectory(image)
 add_subdirectory(top)
+add_subdirectory(vote)
 
 add_library(api SHARED ${SOURCES})
-target_link_libraries(api orm image top pthread mongoclient boost_thread boost_system boost_regex ssl crypto boost_filesystem ${FCGI_LIBS})
+target_link_libraries(api orm image top vote)
+target_link_libraries(api pthread mongoclient boost_thread boost_system boost_regex ssl crypto boost_filesystem ${FCGI_LIBS})
+

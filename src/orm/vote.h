@@ -22,8 +22,12 @@ public:
         return rightId;
     }
 
-    void createNew();
-    void getById(const char* id);
+    const std::string& getId() const {
+        return voteId;
+    }
+
+    bool createNew();
+    bool getById(const char* id);
     bool putResult(EVoteResult result);
 
 private:

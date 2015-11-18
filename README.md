@@ -30,16 +30,10 @@ Response
 **POST** /vote/
 
 Response
-  * **Code**: 201
+  * **Code**: 302
   * **Content-Type**: application/json
   * **Location**: /vote/\<vote_id\>
   * **Body**
-```
-{
-  "item_id_left": "Left item identificator",
-  "item_id_right": "Right item identificator",
-}
-```
 
 ---
 ### Get vote info
@@ -53,8 +47,8 @@ Response
   * **Body**
 ```
 {
-    "item_id_left": "Left item identificator",
-    "item_id_right": "Right item identificator",
+    "leftImage": "Left item identificator",
+    "rightImage": "Right item identificator",
 }
 ```
 
