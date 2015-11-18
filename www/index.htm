@@ -23,8 +23,9 @@
             </div>
         </div>
     </nav>
+
     <div class="container">
-        <h1 class="text-center">Which one is more cute?</h1>
+        <h1 class="text-center" id="title">Which one is more cute?</h1>
         <br><br>
         <div class="row">
             <div class="col-xs-6">
@@ -42,6 +43,9 @@
             window.location.hash = data.voteId;
             $('#left-image').attr('src', data.leftImage);
             $('#right-image').attr('src', data.rightImage);
+        }).error(function(data) {
+            $('#title').text('Server error. Please update page in a minute.');
+            console.log(data);
         });
     </script>
 </body>
