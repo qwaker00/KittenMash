@@ -1,39 +1,48 @@
 <!DOCTYPE>
 <html>
 <head>
-	<title>KittenMash - side-by-side comparation of kittens' images</title>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="icon" type="image/ico" ref="/favicon.ico" />
-	<link rel="stylesheet" type="text/css" href="/style.css">
-	<link href="https://yastatic.net/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <title>KittenMash - side-by-side comparation of kittens' images</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/ico" ref="/favicon.ico" />
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <link href="https://yastatic.net/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>	
-	<nav class="navbar navbar-default">
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="#">KittenMash</a>
-			</div>
-			<div>
-				<ul class="nav navbar-nav">
-					<li class="active"><a href="/">Home</a></li>
-					<li><a href="/top.htm">Top</a></li>
-					<li><a href="/upload.htm">Upload</a></li>
-				</ul>
-			</div>
-		</div>
-	</nav>
-	<div class="container">
-		<h1 class="text-center">Which one is more cute?</h1>
-		<br><br>
-		<div class="row">
-			<div class="col-xs-6">
-				<img src="/image/56468892a2af15f43f85f545" class="img-responsive img-clickable">
-			</div>
-			<div class="col-xs-6">
-				<img src="/image/5649440e4c6b9e1d444cbccc" class="img-responsive img-clickable">
-			</div>
-		</div>
-	</div>
+<body>
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">KittenMash</a>
+            </div>
+            <div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><a href="/">Home</a></li>
+                    <li><a href="/top.htm">Top</a></li>
+                    <li><a href="/upload.htm">Upload</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <h1 class="text-center">Which one is more cute?</h1>
+        <br><br>
+        <div class="row">
+            <div class="col-xs-6">
+                <img id="left-image" class="img-responsive img-clickable">
+            </div>
+            <div class="col-xs-6">
+                <img id="right-image" class="img-responsive img-clickable">
+            </div>
+        </div>
+    </div>
+
+    <script src="https://yastatic.net/jquery/2.1.4/jquery.min.js"></script>
+    <script>
+        $.post("/vote/", function(data) {
+            window.location.hash = data.voteId;
+            $('#left-image').attr('src', data.leftImage);
+            $('#right-image').attr('src', data.rightImage);
+        });
+    </script>
 </body>
 </html>
