@@ -10,7 +10,7 @@ namespace {
     double calcEloAdd(double rA, double , double rB, double score) {
         const double K = rA < 2100 ? 32 : (rA < 2400 ? 24 : 16);
         const double eA = 1.0 / (1.0 + pow(10.0, (rB - rA) / 400));
-        return K * (score - eA);
+        return K * 3 * (score - eA);
     }
 
     thread_local Db db;
