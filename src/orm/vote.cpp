@@ -1,6 +1,13 @@
 #include "vote.h"
 #include "db_impl.h"
 
+#include <random>
+
+namespace {
+    static thread_local std::random_device rd;
+    static thread_local std::mt19937 getRand(rd());
+}
+
 bool DbVote::createNew() {
     size_t count = db->getConnection()->count("test.images", mongo::BSONObj());
     if (count == 0) {
@@ -13,7 +20,7 @@ bool DbVote::createNew() {
     size_t tries = 3;
     int randomNumber;
     while (tries > 0) {
-        randomNumber = rand() % count;
+        randomNumber = getRand() % count;
         const auto& cursor = db->getConnection()->query("test.images", mongo::Query(), 1, randomNumber, &fieldsToReturn);
         if (cursor->more()) {
             left = cursor->next().getOwned();
@@ -27,7 +34,7 @@ bool DbVote::createNew() {
 
     tries = 3;
     while (tries > 0) {
-        randomNumber = rand() % count;
+        randomNumber = getRand() % count;
         const auto& cursor = db->getConnection()->query("test.images", mongo::Query(), 1, randomNumber, &fieldsToReturn);
         if (cursor->more()) {
             right = cursor->next();
