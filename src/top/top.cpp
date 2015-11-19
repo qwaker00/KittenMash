@@ -4,9 +4,12 @@
 
 #include <iostream>
 
+namespace {
+    thread_local Db db;
+}
+
 void TopHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
     if (req->getRequestMethod() == "GET") {
-        Db db;
         const auto& ratings = DbRating::getTop(db, 100);
         std::ostringstream output;
         output << '[';

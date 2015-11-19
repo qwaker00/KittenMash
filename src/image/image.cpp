@@ -4,6 +4,10 @@
 
 #include <iostream>
 
+namespace {
+    thread_local Db db;
+}
+
 void ImageHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
     if (req->getRequestMethod() == "GET") {
         const auto& filename = req->getScriptFilename();
@@ -11,7 +15,6 @@ void ImageHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*
             return req->sendError(400); // No id provided
         }
         const auto& imageId = filename.substr(7);
-        Db db;
         DbImage image(db);
         if (!image.getById(imageId)) {
             return req->sendError(404); // Not found
@@ -32,7 +35,6 @@ void ImageHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*
             }
             std::string data;
             req->remoteFile("image").toString(data);
-            Db db;
             DbImage image(db);
             image.putWithData(data);
             req->setHeader("Location", std::string("/image/") + image.getId());

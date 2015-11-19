@@ -8,10 +8,12 @@
 
 namespace {
     double calcEloAdd(double rA, double , double rB, double score) {
-        double K = rA < 2100 ? 32 : (rA < 2400 ? 24 : 16);
+        const double K = rA < 2100 ? 32 : (rA < 2400 ? 24 : 16);
         const double eA = 1.0 / (1.0 + pow(10.0, (rB - rA) / 400));
         return K * (score - eA);
     }
+
+    thread_local Db db;
 }
 
 void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
@@ -20,7 +22,6 @@ void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*)
         if (filename != "/vote/") {
             return req->sendError(400);
         }
-        Db db;
         DbVote vote(db);
         if (!vote.createNew()) {
             return req->sendError(500); // Ooooops
@@ -43,7 +44,6 @@ void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*)
             voteId = filename.substr(6);
         }
 
-        Db db;
         DbVote vote(db);
         if (!vote.getById(voteId)) {
             return req->sendError(404); // Not found
@@ -92,7 +92,6 @@ void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*)
         EVoteResult resultValue = (result == "left") ? EVoteResult::Left : EVoteResult::Right;
 
 
-        Db db;
         DbVote vote(db);
         if (!vote.getById(voteId)) {
             return req->sendError(404); // Not found
