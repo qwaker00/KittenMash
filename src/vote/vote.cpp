@@ -23,25 +23,76 @@ void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*)
         if (filename.length() <= 6) {
             return req->sendError(400); // No id provided
         }
-        const auto& voteId = req->getScriptFilename().substr(6);
+
+        bool needResult = false;
+        std::string voteId = filename.substr(6);
+        if (filename.length() > 7 && filename.substr(filename.length() - 7) == "/result") {
+            voteId = filename.substr(6, filename.length() - 6 - 7);
+            needResult = true;
+        } else {
+            voteId = filename.substr(6);
+        }
+
         Db db;
         DbVote vote(db);
-        if (!vote.getById(voteId.c_str())) {
+        if (!vote.getById(voteId)) {
             return req->sendError(404); // Not found
         }
 
         std::ostringstream output;
-        output << '{';
-        output << "\"leftImage\":\"/image/" << vote.getLeftId() << "\",";
-        output << "\"rightImage\":\"/image/" << vote.getRightId() << "\",";
-        output << "\"voteId\":\"" << vote.getId() << "\"";
-        output << '}';
 
-        req->setContentType("application/json");
+        if (needResult) {
+            if (vote.getResult() == EVoteResult::Left) {
+                output << "left";
+            } else
+            if (vote.getResult() == EVoteResult::Right) {
+                output << "right";
+            } else {
+                return req->sendError(404); // Result not found
+            }
+        } else {
+            output << '{';
+            output << "\"leftImage\":\"/image/" << vote.getLeftId() << "\",";
+            output << "\"rightImage\":\"/image/" << vote.getRightId() << "\",";
+            output << "\"voteId\":\"" << vote.getId() << "\"";
+            output << '}';
+            req->setContentType("application/json");
+        }
+
         const auto& str = output.str();
         req->write(str.c_str(), str.length());
         return;
-    } else {
+    } else
+    if (req->getRequestMethod() == "PUT") {
+        const auto& filename = req->getScriptFilename();
+        if (filename.length() <= 13 || filename.substr(filename.length() - 7) != "/result") {
+            return req->sendError(400); // No id provided or /result provided
+        }
+        const auto& voteId = filename.substr(6, filename.length() - 7 - 6);
+
+
+        if (req->requestBody().size() > 10) {
+            return req->sendError(400); // Too long body
+        }
+        std::string result;
+        req->requestBody().toString(result);
+        if (result != "left" && result != "right") {
+            return req->sendError(400); // Bad body
+        }
+        EVoteResult resultValue = (result == "left") ? EVoteResult::Left : EVoteResult::Right;
+
+
+        Db db;
+        DbVote vote(db);
+        if (!vote.getById(voteId)) {
+            return req->sendError(404); // Not found
+        }
+        if (!vote.putResult(resultValue)) {
+            return req->sendError(400); // already resulted
+        }
+
+        return;
+     } else {
         return req->sendError(405); // Invalid method
     }
 }
