@@ -52,11 +52,10 @@
             });
         }
         function loadVoteData(data) {
-            $('#vote-box').attr('vote-id', data.voteId);
-            $('#left-image').attr('src', data.leftImage);
-            $('#right-image').attr('src', data.rightImage);
-            $('#left-image').off().removeClass('img-chosen').click(sendResult.bind(window, 'left', data.voteId)).addClass('img-clickable');
-            $('#right-image').off().removeClass('img-chosen').click(sendResult.bind(window, 'right', data.voteId)).addClass('img-clickable');
+            var voteBox = $('#vote-box').attr('vote-id', data.voteId);
+            $('.img-candidate').remove();
+            $('<img id="left-image" class="img-candidate left">').attr('src', data.leftImage).off().click(sendResult.bind(window, 'left', data.voteId)).addClass('img-clickable').appendTo(voteBox);
+            $('<img id="right-image" class="img-candidate right">').attr('src', data.rightImage).off().click(sendResult.bind(window, 'right', data.voteId)).addClass('img-clickable').appendTo(voteBox);
             window.location.hash = data.voteId;
         }
         function loadVote(id) {
@@ -77,6 +76,7 @@
             .error(error);
         }
         function loadNewVote() {
+            $('.img-candidate').addClass('disabled');
             $.post("/vote/", loadVoteData).error(error);
         }
         window.onhashchange = function() {

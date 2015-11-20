@@ -30,3 +30,6 @@
 #toptable img {
     max-width: 400px;
 }
+img.disabled {
+    opacity: 0.4;
+}
