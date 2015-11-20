@@ -28,7 +28,10 @@ void DbImage::putWithData(const std::string& data) {
     this->id = b["_id"].OID().toString();
 }
 
-bool DbImage::getById(const char* id) {
+bool DbImage::getById(const std::string& id) {
+    if (id.length() != 24) {
+        return false;
+    }
     const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
     const auto& fields = BSON("_id" << 1 << "data" << 1);
     const auto& b = db->getConnection()->findOne("test.images", q, &fields);

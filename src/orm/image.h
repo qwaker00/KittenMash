@@ -10,7 +10,7 @@ public:
         : db(db)
     {}
 
-    bool getById(const char* id);
+    bool getById(const std::string& id);
     void putWithData(const std::string& data);
 
     size_t getSize() const;
