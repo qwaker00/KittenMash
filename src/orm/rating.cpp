@@ -32,3 +32,11 @@ std::vector<DbRating> DbRating::getTop(Db& db, size_t n) {
     return result;
 }
 
+bool DbRating::addToRating(double value) {
+    const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
+    db->getConnection()->mongo::DBClientBase::update("test.images", q, BSON("$inc" << BSON("rating" << value << "gameCount" << 1)), false, false);
+    this->rating += value;
+    mongo::BSONObj error = db->getConnection()->getLastErrorDetailed();
+    return error.getIntField("n") == 1;
+}
+

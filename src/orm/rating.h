@@ -23,7 +23,10 @@ public:
     }
 
     bool getById(const std::string& id);
+    bool addToRating(double value);
+
     static std::vector<DbRating> getTop(Db& db, size_t n);
+
 
 private:
     double rating;

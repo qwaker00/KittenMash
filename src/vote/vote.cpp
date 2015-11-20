@@ -1,8 +1,18 @@
 #include "vote.h"
 
 #include <orm/vote.h>
+#include <orm/rating.h>
 
 #include <iostream>
+#include <cmath>
+
+namespace {
+    double calcEloAdd(double rA, double , double rB, double score) {
+        double K = rA < 2100 ? 32 : (rA < 2400 ? 24 : 16);
+        const double eA = 1.0 / (1.0 + pow(10.0, (rB - rA) / 400));
+        return K * (score - eA);
+    }
+}
 
 void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
     if (req->getRequestMethod() == "POST") {
@@ -90,6 +100,12 @@ void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*)
         if (!vote.putResult(resultValue)) {
             return req->sendError(400); // already resulted
         }
+
+        DbRating leftRating(db), rightRating(db);
+        leftRating.getById(vote.getLeftId());
+        rightRating.getById(vote.getRightId());
+        leftRating.addToRating( calcEloAdd(leftRating.getRating(), leftRating.getGameCount(), rightRating.getRating(), resultValue == EVoteResult::Left) );
+        rightRating.addToRating( calcEloAdd(rightRating.getRating(), rightRating.getGameCount(), leftRating.getRating(), resultValue == EVoteResult::Right) );
 
         return;
      } else {
