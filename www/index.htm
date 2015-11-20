@@ -27,26 +27,73 @@
     <div class="container">
         <h1 class="text-center" id="title">Which one is more cute?</h1>
         <br><br>
-        <div class="row">
+        <div class="row" id="vote-box">
             <div class="col-xs-6">
-                <img id="left-image" class="img-responsive img-clickable">
+                <img id="left-image" class="img-responsive">
             </div>
             <div class="col-xs-6">
-                <img id="right-image" class="img-responsive img-clickable">
+                <img id="right-image" class="img-responsive">
             </div>
         </div>
     </div>
 
     <script src="https://yastatic.net/jquery/2.1.4/jquery.min.js"></script>
     <script>
-        $.post("/vote/", function(data) {
-            window.location.hash = data.voteId;
-            $('#left-image').attr('src', data.leftImage);
-            $('#right-image').attr('src', data.rightImage);
-        }).error(function(data) {
+        var loadingData = 0;
+        function error(data) {
             $('#title').text('Server error. Please update page in a minute.');
             console.log(data);
-        });
+        }
+        function sendResult(result, voteId) {
+            $.ajax({
+                url: '/vote/' + voteId + '/result',
+                method: 'PUT',
+                data: result,
+                success: loadNewVote,
+                error: error
+            });
+        }
+        function loadVoteData(data) {
+            $('#vote-box').attr('vote-id', data.voteId);
+            $('#left-image').attr('src', data.leftImage);
+            $('#right-image').attr('src', data.rightImage);
+            $('#left-image').off().removeClass('img-chosen').click(sendResult.bind(window, 'left', data.voteId)).addClass('img-clickable');
+            $('#right-image').off().removeClass('img-chosen').click(sendResult.bind(window, 'right', data.voteId)).addClass('img-clickable');
+            window.location.hash = data.voteId;
+        }
+        function loadVote(id) {
+            $.get('/vote/' + id,
+                function(data) {
+                    loadVoteData(data);
+                    $.get('/vote/' + data.voteId + '/result', function(data) {
+                        if (data == "left") {
+                            $('#left-image').addClass('img-chosen');
+                            $('.img-clickable').removeClass('img-clickable').off();
+                        } else
+                        if (data == "right") {
+                            $('#right-image').addClass('img-chosen');
+                            $('.img-clickable').removeClass('img-clickable').off();
+                        }
+                    });
+                })
+            .error(error);
+        }
+        function loadNewVote() {
+            $.post("/vote/", loadVoteData).error(error);
+        }
+        window.onhashchange = function() {
+            var id = window.location.hash.substring(1);
+            if (id == $('#vote-box').attr('vote-id')) {
+                return;
+            }
+            loadVote(id);
+        }
+
+        if (window.location.hash) {
+            loadVote(window.location.hash.substring(1));
+        } else {
+            loadNewVote();
+        }
     </script>
 </body>
 </html>
