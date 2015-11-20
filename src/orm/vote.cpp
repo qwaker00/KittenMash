@@ -44,27 +44,43 @@ bool DbVote::createNew() {
 
     const mongo::BSONObj& b =
         mongo::BSONObjBuilder().genOID()\
-        .appendDBRef("leftId", "test.images", left["_id"].OID())\
-        .appendDBRef("rightId", "test.images", right["_id"].OID())\
+        .append("leftId", left["_id"].OID().toString())\
+        .append("rightId", right["_id"].OID().toString())\
         .obj();
     db->getConnection()->insert("test.votes", b);
     this->leftId = left["_id"].OID().toString();
     this->rightId = right["_id"].OID().toString();
     this->voteId = b["_id"].OID().toString();
+    this->result = EVoteResult::Unknown;
     return true;
 }
 
 
-bool DbVote::getById(const char* id) {
+bool DbVote::getById(const std::string& id) {
+    if (id.length() != 24) {
+        return false;
+    }
     const mongo::Query& q = mongo::Query( BSON("_id" << mongo::OID(id) ) );
-    const auto& fields = BSON("_id" << 1 << "leftId" << 1 << "rightId" << 1);
+    const auto& fields = BSON("_id" << 1 << "leftId" << 1 << "rightId" << 1 << "result" << 1);
     const auto& b = db->getConnection()->findOne("test.votes", q, &fields);
     if (b.isEmpty()) {
         return false;
     }
-    this->leftId = b["leftId"].dbrefOID().toString();
-    this->rightId = b["rightId"].dbrefOID().toString();
+    this->leftId = b["leftId"].String();
+    this->rightId = b["rightId"].String();
     this->voteId = id;
+    this->result = b.hasField("result") ? (b.getIntField("result") ? EVoteResult::Right : EVoteResult::Left): EVoteResult::Unknown;
     return true;
+}
+
+bool DbVote::putResult(EVoteResult result) {
+    const mongo::Query& q = mongo::Query( BSON(
+                "_id" << mongo::OID(voteId.c_str())
+                << "result" << BSON("$exists" << false)
+        ));
+    const mongo::BSONObj set = BSON("$set" << BSON("result" << int(result)));
+    db->getConnection()->update("test.votes", q, set, false, false);
+    mongo::BSONObj error = db->getConnection()->getLastErrorDetailed();
+    return error.getIntField("n") == 1;
 }
 

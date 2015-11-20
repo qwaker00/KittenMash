@@ -4,8 +4,9 @@
 #include <string>
 
 enum class EVoteResult {
+    Unknown,
     Left,
-    Right
+    Right,
 };
 
 class DbVote {
@@ -26,13 +27,18 @@ public:
         return voteId;
     }
 
+    EVoteResult getResult() const {
+        return result;
+    }
+
     bool createNew();
-    bool getById(const char* id);
+    bool getById(const std::string& id);
     bool putResult(EVoteResult result);
 
 private:
     std::string leftId, rightId;
     std::string voteId;
+    EVoteResult result;
 
     const Db& db;
 };
