@@ -6,5 +6,6 @@ Two images of kittens given to user at time, and he should choose which one is b
 User free to add new images of a kittens to service.
 
 [API description](https://github.com/qwaker00/KittenMash/blob/master/doc/API.md)
+
 [Installation guide](https://github.com/qwaker00/KittenMash/blob/master/doc/Install.md)
 
