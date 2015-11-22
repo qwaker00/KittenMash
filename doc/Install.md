@@ -1,99 +1,19 @@
-## API
+## Installation guide
 
-### List items' rating top
-**GET** /top
-
-Response
- * **Code**: 200
-  * **Content-Type**: application/json
-  * **Body**
+### Install dependencies
 ```
-[
-  {
-  	"image" : <url of image>,
-  	"rating" : <float>,
-  	"gameCount" : <int>
-  },
-  ...    
-]
+sudo apt-get install g++ git nginx mongodb fastcgi-daemon2 libfastcgi-daemon2-dev mongodb-dev libboost-thread-dev boost-system-dev boost-regex-dev boost-filesystem-dev
 ```
 
----
-### Create vote
-**POST** /vote/
-
-Response
-  * **Code**: 302
-  * **Content-Type**: application/json
-  * **Location**: /vote/\<vote_id\>
-  * **Body**
-
----
-### Get vote info
-**GET** /vote/\<vote_id\>
-
-Response
-  * **Code**: 
-      * Success - 200
-      * No such vote - 404
-  * **Content-Type**: application/json
-  * **Body**
+### Checkout, build, install and run service
 ```
-{
-    "leftImage": "Left item identificator",
-    "rightImage": "Right item identificator",
-}
+git clone https://github.com/qwaker00/KittenMash
+cd KittenMash
+mkdir build
+cd build
+cmake ../src/
+make -j4
+cd ../deploy/
+sudo ./install.sh
+sudo ./run.sh
 ```
-
----
-### Get vote result
-**GET** /vote/\<vote_id\>/result
-
-Response
-  * **Code**: 200
-  * **Content-Type**: text/plain
-  * **Body**
-```
-left|right
-```
-
----
-### Set vote result
-**PUT** /vote/\<vote_id\>/result
-
-Request
-  * **Content-Type**: text/plain
-  * **Request body**
-```
-left|right
-```
-
-Response
-  * **Code**: 
-      * Success - 200
-      * Incorrect vote_id or body - 400
-
----
-### Add new image
-**POST** /image/
-
-Request
-  * **Content-Type**: image/*
-  * **Body**: \<item image in some known image format\>
-
-Response
-  * **Code**: 
-      * Success - 302
-      * There is no kitten on image - 400
-  * **Location**: /image/\<item_id\>
-
----
-### Get image by item id
-**GET** /image/\<item_id\>
-
-Response
-  * **Code**: 
-      * Success - 200
-      * Not such item - 404
-  * **Content-Type**: image/*
-  * **Body**: \<item image in some known image format\>
