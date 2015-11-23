@@ -52,6 +52,7 @@
             });
         }
         function loadVoteData(data) {
+            localStorage.lastVoteId = data.voteId;
             var voteBox = $('#vote-box').attr('vote-id', data.voteId);
             $('.img-candidate').remove();
             $('<img id="left-image" class="img-candidate left">').attr('src', data.leftImage).off().click(sendResult.bind(window, 'left', data.voteId)).addClass('img-clickable').appendTo(voteBox);
@@ -76,6 +77,7 @@
             .error(error);
         }
         function loadNewVote() {
+            localStorage.lastVoteId = null;
             $('.img-candidate').addClass('disabled');
             $.post("/vote/", loadVoteData).error(error);
         }
@@ -89,6 +91,8 @@
 
         if (window.location.hash) {
             loadVote(window.location.hash.substring(1));
+        } else if (localStorage.lastVoteId) {
+            loadVote(localStorage.lastVoteId);
         } else {
             loadNewVote();
         }
