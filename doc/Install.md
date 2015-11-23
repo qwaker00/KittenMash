@@ -2,8 +2,10 @@
 
 ### Install dependencies
 ```
-sudo apt-get install g++ git nginx mongodb cmake fastcgi-daemon2 libfastcgi-daemon2-dev mongodb-dev libboost-thread-dev boost-system-dev boost-regex-dev boost-filesystem-dev
+sudo apt-get install g++ git mongodb cmake fastcgi-daemon2 libfastcgi-daemon2-dev mongodb-dev libboost-thread-dev boost-system-dev boost-regex-dev boost-filesystem-dev
 ```
+
+Also you need too build nginx with [gridfs](https://github.com/mdirolf/nginx-gridfs) module
 
 ### Checkout repo
 ```

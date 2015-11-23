@@ -19,11 +19,14 @@ const std::string& DbImage::getId() const {
 
 void DbImage::putWithData(const std::string& data) {
     const mongo::BSONObj& b = mongo::BSONObjBuilder().genOID()\
-        .appendBinData("data", data.length(), mongo::BinDataType::BinDataGeneral, data.c_str())\
         .append("gameCount", (long long)0) \
         .append("rating", (double)1200) \
         .obj();
     db->getConnection()->insert("test.images", b);
+
+    mongo::GridFS gfs(*db->getConnection(), "test");
+    gfs.storeFile(data.c_str(), data.length(), b["_id"].OID().toString());
+
     this->data = data;
     this->id = b["_id"].OID().toString();
 }
