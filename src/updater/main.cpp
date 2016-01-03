@@ -16,32 +16,57 @@ namespace {
 
 int main() {
     Db db;
+    size_t batchSize = 10;
     while (true) {
-        std::vector<DbVote> votes = DbVote::getPending(db, 10);
+        std::vector<DbVote> votes = DbVote::getPending(db, batchSize);
+
         if (votes.size() == 0) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(100));
-        }
-
-        for (const auto& vote : votes) {
-            std::cout << "Process vote #" << vote.getId() << ": ";
-            if (vote.getResult() == EVoteResult::Left) {
-                std::cout << vote.getLeftId() << " better than " << vote.getRightId();
+            if (batchSize <= 10) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
             } else {
-                std::cout << vote.getRightId() << " better than " << vote.getLeftId();
+                batchSize /= 2;
             }
-            std::cout << "...";
+        } else {
+            if (votes.size() == batchSize) {
+                batchSize *= 2;
+            }
+#ifdef DEBUG
+            std::cout << "Got batch of size " << votes.size() << "\n";
+#endif
+            for (const auto& vote : votes) {
 
-            DbRating leftRating(db), rightRating(db);
-            EVoteResult resultValue = vote.getResult();
+#ifdef DEBUG
+                std::cout << "Process vote #" << vote.getId() << ": ";
+                if (vote.getResult() == EVoteResult::Left) {
+                    std::cout << vote.getLeftId() << " better than " << vote.getRightId();
+                } else {
+                    std::cout << vote.getRightId() << " better than " << vote.getLeftId();
+                }
+                std::cout << "...";
+#endif
 
-            leftRating.getById(vote.getLeftId());
-            rightRating.getById(vote.getRightId());
-            leftRating.addToRating( calcEloAdd(leftRating.getRating(), leftRating.getGameCount(), rightRating.getRating(), resultValue == EVoteResult::Left) );
-            rightRating.addToRating( calcEloAdd(rightRating.getRating(), rightRating.getGameCount(), leftRating.getRating(), resultValue == EVoteResult::Right) );
-            vote.resetPending();
+                DbRating leftRating(db), rightRating(db);
+                EVoteResult resultValue = vote.getResult();
 
-            std::cout << " Done." << std::endl;
-         }
+                leftRating.getById(vote.getLeftId());
+                rightRating.getById(vote.getRightId());
+                double addToLeft = calcEloAdd(leftRating.getRating(), leftRating.getGameCount(), rightRating.getRating(), resultValue == EVoteResult::Left);
+                double addToRight = calcEloAdd(rightRating.getRating(), rightRating.getGameCount(), leftRating.getRating(), resultValue == EVoteResult::Right);
+
+#ifdef DEBUG
+                std::cout << "  " << leftRating.getRating() << " (" << addToLeft << ") vs " << rightRating.getRating() << "(" << addToRight << ")... ";
+#endif
+
+                leftRating.addToRating(addToLeft);
+                rightRating.addToRating(addToRight);
+                vote.resetPending();
+
+#ifdef DEBUG
+                std::cout << " Done." << std::endl;
+#endif
+
+             }
+        }
     }
 
     return 0;
