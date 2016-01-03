@@ -80,12 +80,40 @@ bool DbVote::getById(const std::string& id) {
     return true;
 }
 
+std::vector<DbVote> DbVote::getPending(Db& db, size_t n) {
+    const mongo::Query& q = mongo::Query( BSON("pending" << BSON("$exists" << true)) );
+    const auto& fields = BSON("_id" << 1 << "leftId" << 1 << "rightId" << 1 << "result" << 1);
+
+    std::vector<DbVote> result;
+    std::vector<mongo::BSONObj> out;
+    db->getConnection()->findN(out, "test.votes", q, n, 0, &fields);
+    for (const auto& b : out) {
+        result.emplace_back(DbVote(db));
+        result.back().voteId = b["_id"].OID().toString();
+        result.back().leftId = b["leftId"].String();
+        result.back().rightId = b["rightId"].String();
+        result.back().result = b.hasField("result") ? (b.getIntField("result") ? EVoteResult::Right : EVoteResult::Left): EVoteResult::Unknown;
+    }
+    return result;
+}
+
 bool DbVote::putResult(EVoteResult result) {
     const mongo::Query& q = mongo::Query( BSON(
                 "_id" << mongo::OID(voteId.c_str())
                 << "result" << BSON("$exists" << false)
         ));
-    const mongo::BSONObj set = BSON("$set" << BSON("result" << int(result)));
+    const mongo::BSONObj set = BSON("$set" << BSON("result" << int(result) << "pending" << 1));
+    db->getConnection()->update("test.votes", q, set, false, false);
+    mongo::BSONObj error = db->getConnection()->getLastErrorDetailed();
+    return error.getIntField("n") == 1;
+}
+
+bool DbVote::resetPending() const {
+    const mongo::Query& q = mongo::Query( BSON(
+            "_id" << mongo::OID(voteId.c_str())
+            << "pending" << BSON("$exists" << true)
+    ));
+    const mongo::BSONObj set = BSON("$unset" << BSON("pending" << 1));
     db->getConnection()->update("test.votes", q, set, false, false);
     mongo::BSONObj error = db->getConnection()->getLastErrorDetailed();
     return error.getIntField("n") == 1;

@@ -2,6 +2,7 @@
 #include "db.h"
 
 #include <string>
+#include <vector>
 
 enum class EVoteResult {
     Unknown,
@@ -34,6 +35,10 @@ public:
     bool createNew();
     bool getById(const std::string& id);
     bool putResult(EVoteResult result);
+
+    bool resetPending() const;
+
+    static std::vector<DbVote> getPending(Db& db, size_t n);
 
 private:
     std::string leftId, rightId;
