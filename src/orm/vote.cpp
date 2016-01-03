@@ -9,6 +9,10 @@ namespace {
 }
 
 bool DbVote::createNew() {
+    return createNew(mongo::OID::gen().toString());
+}
+
+bool DbVote::createNew(const std::string& id) {
     size_t count = db->getConnection()->count("test.images", mongo::BSONObj());
     if (count == 0) {
         return false;
@@ -50,15 +54,24 @@ bool DbVote::createNew() {
     }
 
     const mongo::BSONObj& b =
-        mongo::BSONObjBuilder().genOID()\
+        mongo::BSONObjBuilder()
+        .append("_id", mongo::OID(id))
         .append("leftId", left["_id"].OID().toString())\
         .append("rightId", right["_id"].OID().toString())\
         .obj();
+
     db->getConnection()->insert("test.votes", b);
+    mongo::BSONObj error = db->getConnection()->getLastErrorDetailed();
+
+    if (!error.getField("err").isNull()) {
+        return false;
+    }
+
     this->leftId = left["_id"].OID().toString();
     this->rightId = right["_id"].OID().toString();
     this->voteId = b["_id"].OID().toString();
     this->result = EVoteResult::Unknown;
+
     return true;
 }
 

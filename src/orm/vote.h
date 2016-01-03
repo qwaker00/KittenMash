@@ -33,6 +33,8 @@ public:
     }
 
     bool createNew();
+    bool createNew(const std::string& id);
+
     bool getById(const std::string& id);
     bool putResult(EVoteResult result);
 

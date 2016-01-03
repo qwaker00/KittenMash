@@ -12,13 +12,24 @@ namespace {
 void VoteHandler::handleRequest(fastcgi::Request *req, fastcgi::HandlerContext*) {
     if (req->getRequestMethod() == "POST") {
         const auto& filename = req->getScriptFilename();
-        if (filename != "/vote/") {
-            return req->sendError(400);
-        }
+
         DbVote vote(db);
-        if (!vote.createNew()) {
-            return req->sendError(500); // Ooooops
+        if (filename != "/vote/") {
+            // Add undocumented features for load testing
+            std::string id = filename.substr(6);
+            if (id.length() != 24) {
+                return req->sendError(400); // Bad id length
+            }
+
+            if (!vote.createNew(id)) {
+                return req->sendError(500); // Ooooops
+            }
+        } else {
+            if (!vote.createNew()) {
+                return req->sendError(500); // Ooooops
+            }
         }
+
         req->setHeader("Location", std::string("/vote/") + vote.getId());
         return req->setStatus(302); // Redirect
     } else
