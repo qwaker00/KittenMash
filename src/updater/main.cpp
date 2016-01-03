@@ -40,7 +40,7 @@ int main() {
             rightRating.addToRating( calcEloAdd(rightRating.getRating(), rightRating.getGameCount(), leftRating.getRating(), resultValue == EVoteResult::Right) );
             vote.resetPending();
 
-            std::cout << " Done.\n";
+            std::cout << " Done." << std::endl;
          }
     }
 
