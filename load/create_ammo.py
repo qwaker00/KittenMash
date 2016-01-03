@@ -62,7 +62,7 @@ random.seed(666)
 db.votes.remove()
 db.images.update_many({}, {'$set' : {'gameCount' : 0l, 'rating' : 1200.0}})
 ammo_post, ammo_put, ammo_get = [], [], []
-for item in xrange(80000):
+for item in xrange(100000):
     vote = '%024x' % random.randint(0, 2 ** (8 * 12) - 1)
     ammo_post.append( ('POST', '/vote/%s' % vote, 'create_vote', '') )
     ammo_get.append( ('GET', '/vote/%s' % vote, 'get_vote', '') )
@@ -90,8 +90,7 @@ while len(ammo_post) + len(ammo_put) + len(ammo_get) > 0:
             del ammo_get[-1]
 
             deficit2 += 1
-
-        deficit1 -= 1
+            deficit1 -= 1
     else:
         ammo.append( ammo_post[-1] )
         del ammo_post[-1]
