@@ -9,3 +9,5 @@ User free to add new images of a kittens to service.
 
 [Installation guide](https://github.com/qwaker00/KittenMash/blob/master/doc/Install.md)
 
+[UI screenshots](https://github.com/qwaker00/KittenMash/blob/master/doc/UI.md)
+
