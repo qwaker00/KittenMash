@@ -58,7 +58,7 @@ left|right
 ```
 
 ---
-### Set vote result
+### Set vote result. Result can be set only once
 **PUT** /vote/\<vote_id\>/result
 
 Request
