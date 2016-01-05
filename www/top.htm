@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/ico" ref="/favicon.ico" />
     <link rel="stylesheet" type="text/css" href="/style.css">
-    <link href="https://yastatic.net/bootstrap/3.3.4/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="/bootstrap.min.css">
 </head>
 <body>
     <nav class="navbar navbar-default">
@@ -24,7 +24,7 @@
         </div>
     </nav>
     <div class="container">
-        <h1 class="text-center" id="title">Top 100 kittens</h1>
+        <h1 class="text-center" id="title">Top 20 kittens</h1>
         <br><br>
         <table class="table" id="toptable">
             <thead>
@@ -36,10 +36,14 @@
                 </tr>
             </thead>
         </table>
+        <br>
+        <h4 class="text-center"><a href="#">Pay for premium account to get top100 kittens</a></h4>
+        <br>
+        <br>
     </div>
-    <script src="https://yastatic.net/jquery/2.1.4/jquery.min.js"></script>
+    <script src="/jquery.min.js"></script>
     <script>
-        $.get('/top', function(response) {
+        $.get('/top/20', function(response) {
             var table = $('#toptable');
             for (var i = 0; i < response.length; ++i) {
                 var item = response[i];
