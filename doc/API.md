@@ -1,7 +1,7 @@
 ## API
 
-### List items' rating top
-**GET** /top
+### Get top N kitten images. N should be non-negative integer no more than 100. By default N is 100.
+**GET** /top[/<N>]
 
 Response
  * **Code**: 200
