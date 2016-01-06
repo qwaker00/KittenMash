@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-enum class EVoteResult {
-    Unknown,
-    Left,
-    Right,
+enum class EVoteResult : int {
+    Unknown = 0,
+    Left = 1,
+    Right = 2,
 };
 
 class DbVote {

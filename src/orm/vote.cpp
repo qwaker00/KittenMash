@@ -89,7 +89,7 @@ bool DbVote::getById(const std::string& id) {
     this->leftId = b["leftId"].String();
     this->rightId = b["rightId"].String();
     this->voteId = id;
-    this->result = b.hasField("result") ? (b.getIntField("result") ? EVoteResult::Right : EVoteResult::Left): EVoteResult::Unknown;
+    this->result = b.hasField("result") ? static_cast<EVoteResult>(b.getIntField("result")) : EVoteResult::Unknown;
     return true;
 }
 
@@ -105,7 +105,7 @@ std::vector<DbVote> DbVote::getPending(Db& db, size_t n) {
         result.back().voteId = b["_id"].OID().toString();
         result.back().leftId = b["leftId"].String();
         result.back().rightId = b["rightId"].String();
-        result.back().result = b.hasField("result") ? (b.getIntField("result") ? EVoteResult::Right : EVoteResult::Left): EVoteResult::Unknown;
+        result.back().result = b.hasField("result") ? static_cast<EVoteResult>(b.getIntField("result")) : EVoteResult::Unknown;
     }
     return result;
 }
