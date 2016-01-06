@@ -64,6 +64,7 @@
                 function(data) {
                     loadVoteData(data);
                     $.get('/vote/' + data.voteId + '/result', function(data) {
+			localStorage.lastVoteId = null;
                         if (data == "left") {
                             $('#left-image').addClass('img-chosen');
                             $('.img-clickable').removeClass('img-clickable').off();
